@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Page Redirect</title>
+</head>
+<body>
+    <p>Picking a random page for you...</p>
+
+    <script>
+        async function redirectToRandom() {
+            try {
+                // Fetch your sitemap file (using the relative path)
+                const response = await fetch('sitemap.xml');
+                const text = await response.text();
+                
+                // Parse the XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                
+                // Get all <loc> tags (these contain your page URLs)
+                const locations = xmlDoc.getElementsByTagName("loc");
+                const urls = [];
+                
+                for (let i = 0; i < locations.length; i++) {
+                    urls.push(locations[i].textContent);
+                }
+
+                if (urls.length > 0) {
+                    // Pick a random URL from the list
+                    const randomURL = urls[Math.floor(Math.random() * urls.length)];
+                    
+                    // Redirect the entire browser window
+                    window.top.location.href = randomURL;
+                } else {
+                    document.body.innerHTML = "No URLs found in sitemap.";
+                }
+            } catch (error) {
+                console.error("Error fetching sitemap:", error);
+                document.body.innerHTML = "Error loading pages. Please check the sitemap path.";
+            }
+        }
+
+        redirectToRandom();
+    </script>
+</body>
+</html>
